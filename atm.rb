@@ -5,15 +5,19 @@ require 'pry'
 class ATM
   attr_accessor :users, :current_user
 
+
   def initialize
+    @atm_balance = 10000
     self.users = []
     load_users
     aut_pin
     menu_options
+
+
   end
 
   def load_users
-    CSV.foreach("bank_names.csv", headers:true, header_converters: :symbol, converters: :all) do |row|
+    CSV.foreach("bank_names.csv", headers:true, header_converters: :symbol) do |row|
       u = User.new
       u.name = row[:name].to_s
       u.pin = row[:pin].to_s
@@ -50,24 +54,43 @@ class ATM
     elsif s == "2"
       check_balance
     elsif s == "3"
-      aut_pin
+      ATM.new
     else puts "Invalid Entry. Please try a different selection:"
       menu_options
     end
   end
 
+  def atm_funds withdrawing
+    if @atm_balance > withdrawing
+      true
+      @atm_balance -= withdrawing
+    else
+      puts "System Error: Insufficent funds in ATM"
+    end
+  end
+
   def withdraw
     puts "How much would you like to withdraw?"
-    w= gets.chomp
-    current_user.balance -= w.to_i
+    withdrawing= gets.chomp.to_i
+    if atm_funds withdrawing
+    then current_user.balance > withdrawing 
+      current_user.balance -= withdrawing
+    else puts "Insufficent funds"
+    end
+    CSV.open("bank_names.csv", "w") do |csv|
+      csv << ["name", "pin", "balance"]
+      users.each do |row|
+      csv << [ row.name, row.pin, row.balance]
+      end
+    end
     options
   end
 
   def check_balance
     puts "Your balance is #{current_user.balance}"
     options
-    end
   end
+end
 
 def options
   puts "Would you like to do anything else? Please type yes or no:"
@@ -75,7 +98,7 @@ def options
   if answer.downcase == "yes"
     menu_options
   elsif answer.downcase == "no"
-    aut_pin
+    ATM.new
   else puts "Invalid Entry. Please type yes or no:"
     options
   end
