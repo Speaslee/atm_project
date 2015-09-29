@@ -18,9 +18,10 @@ class ATM
       u.name = row[:name].to_s
       u.pin = row[:pin].to_s
       u.balance = row[:balance].to_i
-      users.push(u)
-
+      users<<u
     end
+    aut_pin
+    menu_options
   end
 
   def aut_pin
