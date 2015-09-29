@@ -73,14 +73,14 @@ class ATM
     puts "How much would you like to withdraw?"
     withdrawing= gets.chomp.to_i
     if atm_funds withdrawing
-    then current_user.balance > withdrawing 
+      then current_user.balance > withdrawing
       current_user.balance -= withdrawing
     else puts "Insufficent funds"
     end
     CSV.open("bank_names.csv", "w") do |csv|
       csv << ["name", "pin", "balance"]
       users.each do |row|
-      csv << [ row.name, row.pin, row.balance]
+        csv << [ row.name, row.pin, row.balance]
       end
     end
     options
